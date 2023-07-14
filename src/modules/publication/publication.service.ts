@@ -1,26 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePublicationDto } from './dto/create-publication.dto';
 import { UpdatePublicationDto } from './dto/update-publication.dto';
+import { PublicationRepository } from './repositories/publication.repository';
+import { Publication, User } from '@prisma/client';
 
 @Injectable()
 export class PublicationService {
-  create(createPublicationDto: CreatePublicationDto) {
-    return 'This action adds a new publication';
-  }
+  constructor(private readonly publicationsRepository: PublicationRepository) {}
+  async create(currentUser: User, data: CreatePublicationDto) {
+    const publicationAlreadyExists: Publication =
+      await this.publicationsRepository.findByTitle(data.title);
 
-  findAll() {
-    return `This action returns all publication`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} publication`;
-  }
-
-  update(id: number, updatePublicationDto: UpdatePublicationDto) {
-    return `This action updates a #${id} publication`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} publication`;
+    if (publicationAlreadyExists) {
+      throw new HttpException(
+        'Publication already exists',
+        HttpStatus.CONFLICT,
+      );
+    }
+    const publicationData = {
+      ...data,
+      userId: currentUser.id,
+    };
+    await this.publicationsRepository.addPublication(publicationData);
   }
 }

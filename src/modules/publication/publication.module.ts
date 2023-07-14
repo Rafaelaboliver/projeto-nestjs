@@ -6,6 +6,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { UserRepository } from '../user/repositories/user.repository';
 import { PrismaUsersRepository } from '../user/repositories/implementations/prismaUsers.repository';
+import { PublicationRepository } from './repositories/publication.repository';
+import { PrismaPublicationRepository } from './repositories/implementations/prismaPublication.repository';
 
 @Module({
   imports: [JwtModule.register({ secret: process.env.JWT_SECRET })],
@@ -17,6 +19,10 @@ import { PrismaUsersRepository } from '../user/repositories/implementations/pris
     {
       provide: UserRepository,
       useClass: PrismaUsersRepository,
+    },
+    {
+      provide: PublicationRepository,
+      useClass: PrismaPublicationRepository,
     },
   ],
 })

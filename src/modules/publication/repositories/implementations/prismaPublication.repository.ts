@@ -4,11 +4,11 @@ import { PublicationRepository } from '../publication.repository';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
-export class PrismaPublicationsRepository implements PublicationRepository {
+export class PrismaPublicationRepository implements PublicationRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async addPublication(data: Prisma.PublicationCreateInput) {
-    return await this.prisma.publication.create({ data: data });
+  async addPublication(data: Prisma.PublicationUncheckedCreateInput) {
+    return await this.prisma.publication.create({ data });
   }
 
   async findAllPublications() {
@@ -16,6 +16,10 @@ export class PrismaPublicationsRepository implements PublicationRepository {
   }
 
   async findPublicationById(id: number) {
-    return await this.prisma.publication.findFirst({ where: { id } });
+    return await this.prisma.publication.findUnique({ where: { id } });
+  }
+
+  async findByTitle(title: string) {
+    return await this.prisma.publication.findUnique({ where: { title } });
   }
 }
