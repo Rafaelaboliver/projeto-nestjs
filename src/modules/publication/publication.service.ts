@@ -23,4 +23,8 @@ export class PublicationService {
     };
     await this.publicationsRepository.addPublication(publicationData);
   }
+
+  async getAllPublications(user: User) {
+    return await this.publicationsRepository.findPublicationByUserId(user.id);
+  }
 }
